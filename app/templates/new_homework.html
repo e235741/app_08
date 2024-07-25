@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>New Homework</h2>
+<form method="POST" class="form-horizontal">
+    {{ form.hidden_tag() }}
+
+    <div class="form-group">
+        {{ form.contest.label(class="control-label") }}
+        {{ form.contest(class="form-control") }}
+    </div>
+
+    <div class="form-group">
+        {{ form.hour.label(class="control-label") }}
+        {{ form.hour(class="form-control") }}
+        {{ form.minute.label(class="control-label") }}
+        {{ form.minute(class="form-control") }}
+    </div>
+
+    <div class="form-group">
+        {{ form.submission.label(class="control-label") }}
+        {{ form.submission(class="form-control") }}
+    </div>
+
+    <div class="form-group">
+        <div class="checkbox">
+            <label>
+                {{ form.once_a_week() }} {{ form.once_a_week.label }}
+            </label>
+        </div>
+    </div>
+
+    <div class="form-group">
+        {{ form.submit(class="btn btn-primary") }}
+    </div>
+</form>
+{% endblock %}
+

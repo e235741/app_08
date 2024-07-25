@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h2>Homework List</h2>
+    <ul>
+        {% for homework in homeworks %}
+            <li>{{ homework.contest }} - Limit Time: {{ homework.limit_time }} - Submission: {{ homework.submission }} - Once a Week: {{ homework.once_a_week }}</li>
+        {% endfor %}
+    </ul>
+{% endblock %}

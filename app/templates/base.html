@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flask App</title>
+</head>
+<body>
+    <h1>Flask App</h1>
+    <nav>
+        <ul>
+            <li><a href="{{ url_for('index') }}">Home</a></li>
+            <li><a href="{{ url_for('new_homework') }}">New Homework</a></li>
+            <li><a href="{{ url_for('new_lesson') }}">New Lesson</a></li>
+            <li><a href="{{ url_for('lesson_list') }}">Lesson List</a></li>
+            <li><a href="{{ url_for('homework_list') }}">Homework List</a></li>
+        </ul>
+    </nav>
+    {% block content %}{% endblock %}
+</body>
+</html>
+
+
