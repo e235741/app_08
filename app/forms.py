@@ -1,18 +1,16 @@
-from flask_wtf import FlaskForm
-from wtforms import StringField, IntegerField, BooleanField, SubmitField, SelectField
+from wtforms import Form, StringField, DateField, SelectField, BooleanField, IntegerField
 from wtforms.validators import DataRequired
 
-class HomeworkForm(FlaskForm):
-    contest = StringField('Contest', validators=[DataRequired()])
-    hour = SelectField('Hour', choices=[(str(h), f'{h:02}') for h in range(24)], validators=[DataRequired()])
-    minute = SelectField('Minute', choices=[(str(m), f'{m:02}') for m in range(0, 60, 5)], validators=[DataRequired()])
-    submission = StringField('Submission', validators=[DataRequired()])
+class TaskInfoForm(Form):
+    content = StringField(validators=[DataRequired(message='授業名を入力してください')])
+    submission = StringField(validators=[DataRequired(message='課題内容を入力してください')])
+    day = DateField(validators=[DataRequired('提出日は必須入力です')], 
+                        format="%Y-%m-%d", render_kw={"placeholder": "yyyy/mm/dd"})
+    hour = SelectField(choices=[(str(h), f'{h:02}') for h in range(24)], validators=[DataRequired()])
+    minute = SelectField(choices=[(str(m), f'{m:02}') for m in range(0, 60, 5)], validators=[DataRequired()])
     once_a_week = BooleanField('Once a Week')
-    submit = SubmitField('Add Homework')
 
-class LessonForm(FlaskForm):
-    name = StringField('Lesson Name', validators=[DataRequired()])
-    homework_num = IntegerField('Number of Homeworks', validators=[DataRequired()])
-    number_absence = IntegerField('Number of Absences', validators=[DataRequired()])
-    submit = SubmitField('Add Lesson')
+class LessonInfoForm(Form):
+    name = StringField(validators=[DataRequired()])
+    number_absence = IntegerField(validators=[DataRequired()])
 

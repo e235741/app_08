@@ -1,6 +1,71 @@
-{% extends 'base.html' %}
-
-{% block content %}
-    <p>Welcome to the Flask App!</p>
-{% endblock %}
+<!DOCTYPE html>
+<html lang="ja^JP">
+<head>
+    <meta charset="utf-8">
+    <title>Task List</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h2>課題提出と出席確認ページ</h2>
+        <hr>
+        <ul class = "row-buttons">
+            <a href="{{ url_for('new_task') }}" class="button">課題新規作成</a>
+            <a href="{{ url_for('new_lesson') }}" class="button">出席一覧</a>
+        </ul>
+        <hr>
+        <h2 class="no-complete">未提出</h2>
+        <ul>
+            {% for task in uncompleted_tasks %}
+            <div>
+                <p style="display:inline;">{{ task.content }}</p>
+                <p style="display:inline;" class = "text">{{ task.submission }}</p>
+                <p style="display:inline;" class = "text">{{ task.limit_time.split(':')[0] }}  {{ task.limit_time.split(':')[1] }}時{{ task.limit_time.split(':')[2] }}分</p>
+                <p></p>
+                <form method="post" action="{{ url_for('complete_task', task_id=task.homework_id) }}" style="display:inline;">
+                    <button type="submit" class="complete-button">完了</button>
+                </form>
+                <form method="post" action="{{ url_for('delete_task', task_id=task.homework_id) }}" style="display:inline;">
+                    <button type="submit" class="delete-button">削除</button>
+                </form>
+                <form method="post" action="{{ url_for('update_task', task_id=task.homework_id) }}" style="display:inline;">
+                    <button type="submit" class="update-button">変更</button>
+                </form>
+            </div>
+            {% endfor %}
+        </ul>
+        <hr>
+        <h2 class="complete">提出済み</h2>
+        <ul>
+            {% for task in completed_tasks %}
+            <div>
+                <p style="display:inline;">{{ task.content }}</p>
+                <p style="display:inline;" class = "text">{{ task.submission }}</p>
+                <p style="display:inline;" class = "text">{{ task.limit_time.split(':')[0] }}  {{ task.limit_time.split(':')[1] }}時{{ task.limit_time.split(':')[2] }}分</p>
+                <p></p>
+                <form method="post" action="{{ url_for('uncomplete_task', task_id=task.homework_id) }}" style="display:inline;">
+                    <button type="submit" class="uncomplete-button">戻す</button>
+                </form>
+                <form method="post" action="{{ url_for('delete_task', task_id=task.homework_id) }}" style="display:inline;">
+                    <button type="submit" class="delete-button">削除</button>
+                </form>
+                <form method="post" action="{{ url_for('update_task', task_id=task.homework_id) }}" style="display:inline;">
+                    <button type="submit" class="update-button">変更</button>
+                </form>
+            </div>
+            {% endfor %}
+        </ul>
+        <hr>
+        <h2>授業一覧</h2>
+        <ul>
+            {% for lesson in lessons %}
+            <div>
+                <p style="display:inline;">授業名: {{ lesson.name }}</p>
+                <p style="display:inline;" class="text">欠席可能回数: {{ lesson.number_absence }}</p>
+            </div>
+            {% endfor %}
+        </ul>
+    </div>
+</body>
+</html>
 

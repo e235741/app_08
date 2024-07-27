@@ -1,22 +1,33 @@
-{% extends 'base.html' %}
-
-{% block content %}
-    <h2>New Lesson</h2>
-    <form method="POST">
-        {{ form.hidden_tag() }}
-        <p>
-            {{ form.name.label }}<br>
-            {{ form.name(size=32) }}
-        </p>
-        <p>
-            {{ form.homework_num.label }}<br>
-            {{ form.homework_num(size=32) }}
-        </p>
-        <p>
-            {{ form.number_absence.label }}<br>
-            {{ form.number_absence(size=32) }}
-        </p>
-        <p>{{ form.submit() }}</p>
-    </form>
-{% endblock %}
-
+<!DOCTYPE html>
+<html lang="ja^JP">
+<head>
+    <meta charset="utf-8">
+    <title>New Lesson</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <!-- <div style="color: red;">
+        {% if form.errors %}
+            <ul>
+            === エラーメッセージ ===
+            {% for k, v in form.errors.items() %}
+                <li>{{ k }}: {{ v }}</li>
+            {% endfor %}
+            </ul>
+        {% endif %}
+    </div> -->
+    <div class="container">
+        <h2>新規授業</h2>
+        <hr>
+        <form method="POST" action="{{ url_for('new_lesson') }}">
+            <h2 for="name">授業名</h2><br>
+            {{ form.name(class_="text-input") }}<br>
+            <h2 for="number_absence">欠席可能回数</h2><br>
+            {{ form.number_absence() }}<br>
+            <p></p>
+            <input type="submit" value="追加" class="complete-button" style="display:inline;">
+            <input type="button" onclick="history.back()" value="戻る" class="delete-button" style="display:inline;">
+        </form>
+    </div>
+</body>
+</html>
