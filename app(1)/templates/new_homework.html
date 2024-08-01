@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>課題提出</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid black;
+            text-align: center;
+            padding: 10px;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .header {
+            background-color: #f8f8f8;
+            padding: 10px;
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .warning {
+            background-color: #ffcccc;
+            padding: 10px;
+            text-align: center;
+            font-size: 18px;
+            color: red;
+            margin-top: 10px;
+        }
+        .note {
+            position: relative;
+            top: -20px;
+            left: 20px;
+            background-color: #e0f7fa;
+            padding: 10px;
+            border: 1px solid #b2ebf2;
+            border-radius: 5px;
+            width: 220px;
+        }
+        .note2 {
+            position: relative;
+            top: -10px;
+            left: 20px;
+            background-color: #e0f7fa;
+            padding: 10px;
+            border: 1px solid #b2ebf2;
+            border-radius: 5px;
+            width: 220px;
+        }
+        .highlight {
+            color: red;
+        }
+        .muted-button {
+            background-color: #e0e0e0;
+            border: 1px solid #ccc;
+            color: #555;
+            cursor: pointer;
+            font-size: 14px;
+            text-decoration: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+        }
+        .muted-button:hover {
+            background-color: #d0d0d0;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">課題提出</div>
+    <input type="button" onclick="history.back()" value="戻る" class="delete-button" style="display:inline;">
+    <table>
+        <tr>
+            <th></th>
+            <th>月</th>
+            <th>火</th>
+            <th>水</th>
+            <th>木</th>
+            <th>金</th>
+        </tr>
+        <tr>
+            <td>1</td>
+            {% for on in one %}
+            <td>
+                {% if on.lesson_id %}
+                    <a href="{{ url_for('new_homework_with_lesson_id', lesson_id=on.lesson_id) }}" class="btn btn-primary">{{ lessons[on.lesson_id] }}</a>
+                {% else %}
+                    <a href="{{ url_for('create_lesson', time_id=on.time_id) }}" class="muted-button">講義登録</a>
+                {% endif %}
+            </td>
+            {% endfor %}
+        </tr>
+        <tr>
+            <td>2</td>
+            {% for tw in two %}
+            <td>
+                {% if tw.lesson_id %}
+                    <a href="{{ url_for('new_homework_with_lesson_id', lesson_id=tw.lesson_id) }}" class="btn btn-primary">{{ lessons[tw.lesson_id] }}</a>
+                {% else %}
+                    <a href="{{ url_for('create_lesson', time_id=tw.time_id) }}" class="muted-button">講義登録</a>
+                {% endif %}
+            </td>
+            {% endfor %}
+        </tr>
+        <tr>
+            <td>3</td>
+            {% for thr in three %}
+            <td>
+                {% if thr.lesson_id %}
+                    <a href="{{ url_for('new_homework_with_lesson_id', lesson_id=thr.lesson_id) }}" class="btn btn-primary">{{ lessons[thr.lesson_id] }}</a>
+                {% else %}
+                    <a href="{{ url_for('create_lesson', time_id=thr.time_id) }}" class="muted-button">講義登録</a>
+                {% endif %}
+            </td>
+            {% endfor %}
+        </tr>
+        <tr>
+            <td>4</td>
+            {% for forp in four %}
+            <td>
+                {% if forp.lesson_id %}
+                    <a href="{{ url_for('new_homework_with_lesson_id', lesson_id=forp.lesson_id) }}" class="btn btn-primary">{{ lessons[forp.lesson_id] }}</a>
+                {% else %}
+                    <a href="{{ url_for('create_lesson', time_id=forp.time_id) }}" class="muted-button">講義登録</a>
+                {% endif %}
+            </td>
+            {% endfor %}
+        </tr>
+        <tr>
+            <td>5</td>
+            {% for fiv in five %}
+            <td>
+                {% if fiv.lesson_id %}
+                    <a href="{{ url_for('new_homework_with_lesson_id', lesson_id=fiv.lesson_id) }}" class="btn btn-primary">{{ lessons[fiv.lesson_id] }}</a>
+                {% else %}
+                    <a href="{{ url_for('create_lesson', time_id=fiv.time_id) }}" class="muted-button">講義登録</a>
+                {% endif %}
+            </td>
+            {% endfor %}
+        </tr>
+        <tr>
+            <td>6</td>
+            {% for si in six %}
+            <td>
+                {% if si.lesson_id %}
+                    <a href="{{ url_for('new_homework_with_lesson_id', lesson_id=si.lesson_id) }}" class="btn btn-primary">{{ lessons[si.lesson_id] }}</a>
+                {% else %}
+                    <a href="{{ url_for('create_lesson', time_id=si.time_id) }}" class="muted-button">講義登録</a>
+                {% endif %}
+            </td>
+            {% endfor %}
+        </tr>
+        <tr>
+            <td>7</td>
+            {% for sev in seven %}
+            <td>
+                {% if sev.lesson_id %}
+                    <a href="{{ url_for('new_homework_with_lesson_id', lesson_id=sev.lesson_id) }}" class="btn btn-primary">{{ lessons[sev.lesson_id] }}</a>
+                {% else %}
+                    <a href="{{ url_for('create_lesson', time_id=sev.time_id) }}" class="muted-button">講義登録</a>
+                {% endif %}
+            </td>
+            {% endfor %}
+        </tr>
+        <tr>
+            <td>8</td>
+            {% for eig in eight %}
+            <td>
+                {% if eig.lesson_id %}
+                    <a href="{{ url_for('new_homework_with_lesson_id', lesson_id=eig.lesson_id) }}" class="btn btn-primary">{{ lessons[eig.lesson_id] }}</a>
+                {% else %}
+                    <a href="{{ url_for('create_lesson', time_id=eig.time_id) }}" class="muted-button">講義登録</a>
+                {% endif %}
+            </td>
+            {% endfor %}
+        </tr>
+        <tr>
+            <td>9</td>
+            {% for nin in nine %}
+            <td>
+                {% if nin.lesson_id %}
+                    <a href="{{ url_for('new_homework_with_lesson_id', lesson_id=nin.lesson_id) }}" class="btn btn-primary">{{ lessons[nin.lesson_id] }}</a>
+                {% else %}
+                    <a href="{{ url_for('create_lesson', time_id=nin.time_id) }}" class="muted-button">講義登録</a>
+                {% endif %}
+            </td>
+            {% endfor %}
+        </tr>
+    </table>
+</body>
+</html>
+
+

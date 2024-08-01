@@ -1,41 +1,30 @@
 <!DOCTYPE html>
-<html lang="ja^JP">
+<html lang="ja">
 <head>
     <meta charset="utf-8">
     <title>課題更新</title>
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
 </head>
-<body> 
-    <!-- <div style="color: red;">
-        {% if form.errors %}
-            <ul>
-                === エラーメッセージ ===
-                {% for k, v in form.errors.items() %}
-                    <li>{{ k }}: {{ v }}</li>
-                {% endfor %}
-            </ul>
-        {% endif %}
-    </div> -->
+<body>
     <div class="container">
-        <h2>課題更新</h2> 
-        <hr> 
-        <form method="POST" action="{{ url_for('update_task', task_id=task.homework_id) }}">
-            <h2 for="content">授業名</h2><br>
-            {{ form.content(class="text-input", value=task.content) }}<br>
-            <h2 for="submission">課題内容</h2><br>
-            {{ form.submission(class="text-input", value=task.submission) }}<br>
+        <h2>課題更新</h2>
+        <hr>
+        <form method="POST" action="{{ url_for('update_homework', homework_id=homework.homework_id) }}">
+            {{ form.hidden_tag() }}
+            <h2 for="contest">コンテスト</h2><br>
+            {{ form.contest(class="text-input", value=homework.contest) }}<br>
             <h2>提出期限</h2><br>
             <div>
                 <label for="day">提出日:</label>
-                {{ form.day(value=task.limit_time.split(':')[0]) }}
+                {{ form.day(value=homework.limit_time.split(' ')[0]) }}
                 <label for="hour">時:</label>
-                {{ form.hour(value=task.limit_time.split(':')[1]) }}
+                {{ form.hour(value=homework.limit_time.split(' ')[1].split(':')[0]) }}
                 <label for="minute">分:</label>
-                {{ form.minute(value=task.limit_time.split(':')[2]) }}
+                {{ form.minute(value=homework.limit_time.split(' ')[1].split(':')[1]) }}
             </div>
             <br>
             <h2>毎週同じ時間に設定する</h2><br>
-            {{ form.once_a_week(value=task.once_a_week) }}<br>
+            {{ form.once_a_week(checked=homework.once_a_week) }}<br>
             <p></p>
             <input type="submit" value="更新" class="complete-button" style="display:inline;">
             <input type="button" onclick="history.back()" value="戻る" class="delete-button" style="display:inline;">
