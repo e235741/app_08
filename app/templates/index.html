@@ -81,6 +81,16 @@
             {% endif %}
             {% endfor %}
         </ul>
+        <hr>
+        <h2>授業一覧</h2>
+        <ul>
+            {% for lesson in lessons %}
+            <div>
+                <p style="display:inline;">授業名: {{ lesson.name }}</p>
+                <p style="display:inline;" class="text">欠席可能回数: {{ lesson.number_absence }}</p>
+            </div>
+            {% endfor %}
+        </ul>
     </div>
 </body>
 </html>

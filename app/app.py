@@ -1,10 +1,27 @@
 from flask_sqlalchemy import SQLAlchemy
-from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import Flask, render_template, request, redirect, url_for, flash, abort
 from flask_migrate import Migrate
 from forms import HomeworkForm, LessonForm
 import os
 from datetime import datetime
 from apscheduler.schedulers.background import BackgroundScheduler
+from linebot.v3 import (
+    WebhookHandler
+)
+from linebot.v3.exceptions import (
+    InvalidSignatureError
+)
+from linebot.v3.messaging import (
+    Configuration,
+    ApiClient,
+    MessagingApi,
+    ReplyMessageRequest,
+    TextMessage
+)
+from linebot.v3.webhooks import (
+    MessageEvent,
+    TextMessageContent
+)
 
 app = Flask(__name__)
 
@@ -12,7 +29,7 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = os.urandom(24)
 base_dir = os.path.dirname(__file__)
 database = 'sqlite:///' + os.path.join(base_dir, 'data.sqlite')
-app.config['SQLALCHEMY_DATABASE_URI'] = database
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', database)
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # SQLAlchemyとMigrateの設定
@@ -48,6 +65,15 @@ class Chart(db.Model):
     finish_time = db.Column(db.String(120), nullable=True)
     day_of_week = db.Column(db.String(120))
 
+@app.before_request
+def before_first_request():
+    try:
+        # 簡単なクエリを実行してデータベース接続を確認
+        db.session.execute('SELECT 1')
+        app.logger.info('Database connection successful.')
+    except Exception as e:
+        app.logger.error(f'Database connection failed: {e}')
+
 def check_due_dates():
     with app.app_context():
         now = datetime.now()
@@ -74,8 +100,10 @@ def index():
     delay_homeworks = Homework.query.filter_by(submission=3).all()
 
     homework_lessons = db.session.query(Homework, Lesson).join(LessonHomework, Homework.homework_id == LessonHomework.homework_id).join(Lesson, LessonHomework.lesson_id == Lesson.lesson_id).all()
+    
+    lessons = Lesson.query.all()
 
-    return render_template('index.html', uncompleted_homeworks=uncompleted_homeworks, completed_homeworks=completed_homeworks, delay_homeworks=delay_homeworks, homework_lessons=homework_lessons)
+    return render_template('index.html', uncompleted_homeworks=uncompleted_homeworks, completed_homeworks=completed_homeworks, delay_homeworks=delay_homeworks, homework_lessons=homework_lessons, lessons=lessons)
 
 @app.route('/new_homework')
 def new_homework():
@@ -187,6 +215,90 @@ def update_homework(homework_id):
 
     return render_template('update_homework.html', form=form, homework=homework)
 
-# 実行
+# LINE Messaging APIのチャンネルアクセストークンとチャンネルシークレットを設定します
+LINE_CHANNEL_ACCESS_TOKEN = os.getenv('LINE_CHANNEL_ACCESS_TOKEN')
+LINE_CHANNEL_SECRET = os.getenv('LINE_CHANNEL_SECRET')
+
+configuration = Configuration(access_token=LINE_CHANNEL_ACCESS_TOKEN)
+handler = WebhookHandler(LINE_CHANNEL_SECRET)
+
+@app.route("/callback", methods=['POST'])
+def callback():
+    # リクエストヘッダーから署名を取得
+    signature = request.headers['X-Line-Signature']
+    # リクエストボディを取得
+    body = request.get_data(as_text=True)
+    app.logger.info("Request body: " + body)
+    # 署名を検証し、問題がなければハンドラーに渡す
+    try:
+        handler.handle(body, signature)
+    except InvalidSignatureError:
+        app.logger.error("Invalid signature. Please check your channel access token/channel secret.")
+        abort(400)
+    return 'OK'
+
+@handler.add(MessageEvent, message=TextMessageContent)
+def handle_message(event):
+    app.logger.info(f"Received message: {event.message.text} from user: {event.source.user_id}")
+    user_message = event.message.text.lower()
+    now = datetime.now()
+    current_time = now.time()
+    current_weekday = now.weekday()
+    app.logger.info(f"Current time: {current_time}, Current weekday: {current_weekday}")
+
+    time_slots = [
+        {"start": "08:30", "end": "10:00", "lesson_offset": 0},
+        {"start": "10:20", "end": "11:50", "lesson_offset": 1},
+        {"start": "12:50", "end": "14:20", "lesson_offset": 2},
+        {"start": "14:40", "end": "16:10", "lesson_offset": 3},
+        {"start": "16:20", "end": "17:50", "lesson_offset": 4}
+    ]
+
+    reply_message = "時間外です"
+    for slot in time_slots:
+        start_time = datetime.strptime(slot["start"], "%H:%M").time()
+        end_time = datetime.strptime(slot["end"], "%H:%M").time()
+        app.logger.info(f"Checking time slot: {slot['start']} - {slot['end']}")
+        if start_time <= current_time <= end_time:
+            app.logger.info("Current time is within this slot")
+            lesson = Chart.query.filter(Chart.time_id == (1 + slot["lesson_offset"] + current_weekday * 9)).first()
+            if lesson:
+                app.logger.info("Lesson found in database")
+                if user_message == "出席":
+                    reply_message = "出席が確認されました"
+                else:
+                    lesson_instance = Lesson.query.get(lesson.lesson_id)
+                    lesson_instance.number_absence -= 1
+                    db.session.commit()
+                    reply_message = "出席が確認されていません。欠席として記録されました。"
+                break
+            else:
+                app.logger.info("No lesson found for this time slot")
+
+    app.logger.info(f"Reply message: {reply_message}")
+    
+    with ApiClient(configuration) as api_client:
+        line_bot_api = MessagingApi(api_client)
+        try:
+            response = line_bot_api.reply_message_with_http_info(
+                ReplyMessageRequest(
+                    reply_token=event.reply_token,
+                    messages=[TextMessage(text=reply_message)]
+                )
+            )
+            app.logger.info(f"Reply message sent: {response}")
+        except Exception as e:
+            app.logger.error(f"Error: {e}")
+            try:
+                line_bot_api.reply_message_with_http_info(
+                    ReplyMessageRequest(
+                        reply_token=event.reply_token,
+                        messages=[TextMessage(text="エラーが発生しました。もう一度試してください。")]
+                    )
+                )
+            except Exception as e:
+                app.logger.error(f"Failed to send error message: {e}")
+
 if __name__ == '__main__':
-    app.run(debug=True)
+    port = int(os.getenv('PORT', 5000))
+    app.run(host='0.0.0.0', port=port)
