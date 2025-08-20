@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="utf-8">
+    <title>課題更新</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h2>課題更新</h2>
+        <hr>
+        <form method="POST" action="{{ url_for('update_homework', homework_id=homework.homework_id) }}">
+            {{ form.hidden_tag() }}
+            <h2 for="contest">コンテスト</h2><br>
+            {{ form.contest(class="text-input", value=homework.contest) }}<br>
+            <h2>提出期限</h2><br>
+            <div>
+                <label for="day">提出日:</label>
+                {{ form.day(value=homework.limit_time.split(' ')[0]) }}
+                <label for="hour">時:</label>
+                {{ form.hour(value=homework.limit_time.split(' ')[1].split(':')[0]) }}
+                <label for="minute">分:</label>
+                {{ form.minute(value=homework.limit_time.split(' ')[1].split(':')[1]) }}
+            </div>
+            <br>
+            <h2>毎週同じ時間に設定する</h2><br>
+            {{ form.once_a_week(checked=homework.once_a_week) }}<br>
+            <p></p>
+            <input type="submit" value="更新" class="complete-button" style="display:inline;">
+            <input type="button" onclick="history.back()" value="戻る" class="delete-button" style="display:inline;">
+        </form>
+    </div>
+</body>
+</html>
+

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>新規課題</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h2>新規課題</h2>
+        <hr>
+        <form method="POST" action="{{ url_for('new_homework_with_lesson_id', lesson_id=lesson_id) }}">
+            {{ form.hidden_tag() }}
+            <h2 for="contest">コンテスト</h2><br>
+            {{ form.contest(class_="text-input") }}<br>
+            <h2 for="limit_time">提出期限</h2><br>
+            <div>
+                <label for="day">提出日:</label>
+                {{ form.day() }}
+                <label for="hour">時:</label>
+                {{ form.hour() }}
+                <label for="minute">分:</label>
+                {{ form.minute() }}
+            </div>
+            <br>
+            <h2 for="once_a_week">毎週同じ時間に設定する</h2><br>
+            {{ form.once_a_week() }}<br>
+            <p></p>
+            <input type="submit" value="追加" class="complete-button" style="display:inline;">
+            <input type="button" onclick="history.back()" value="戻る" class="delete-button" style="display:inline;">
+        </form>
+    </div>
+</body>
+</html>
+
+
+
+
+
